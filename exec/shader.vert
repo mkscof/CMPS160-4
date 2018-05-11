@@ -17,17 +17,23 @@ uniform int u_shade_toggle;
 void main() {
   gl_Position = u_MvpMatrix * a_Position;
   vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal));
+  
   vec4 vertexPosition = u_ModelMatrix * a_Position;
   vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition));
   float nDotL = max(dot(lightDirection, normal), 0.0);
   
+  vec3 specLight = vec3(0, 1, 0);
+  vec3 viewDirection = vec3(0, 0, -1);
+  vec3 reflectedVector;
+  int shine;
+  float rDotVp = max((dot(reflectedVector, viewDirection)^shine), 0.0);
+  
   vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;
   vec3 ambient = u_AmbientLight * a_Color.rgb;
+  vec3 specular = specLight * rDotVp;
   
   int shading_type = u_shade_toggle;
   if(shading_type == 0){  //Gouraud
-
+    v_Color = vec4(diffuse + ambient + specular, a_Color.a);
   }
-
-  v_Color = vec4(diffuse + ambient, a_Color.a);
 }
