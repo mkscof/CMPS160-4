@@ -9,6 +9,7 @@ var colors = [];
 var normals = [];
 var indices = [];
 
+var ambientCount = 0;
 var lightPosX = 3.3;
 
 function main() {
@@ -35,6 +36,9 @@ function main() {
 
     var lbutton = document.getElementById("moveL");
     lbutton.onclick = function(ev){ moveLight(ev, gl, canvas); };
+
+    var abutton = document.getElementById("changeAmbient");
+    abutton.onclick = function(ev){ changeAmbient(ev, gl, canvas); };
     
 }
 
@@ -63,7 +67,8 @@ function start(gl, canvas) {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Register function event handlers
-    // window.onkeypress = function(ev){ keypress(ev, gl); };
+    
+    window.onkeypress = function(ev){ keypress(canvas, ev, gl); };
     document.getElementById('update_screen').onclick = function(){ updateScreen(canvas, gl); };
     document.getElementById('save_canvas').onclick = function(){ saveCanvas(); };
     // setup SOR object reading/writing
@@ -151,12 +156,12 @@ function initVertexBuffers(gl) {
 
   // Colors
   colors = new Float32Array([
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
-    1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0    // v4-v7-v6-v5 back
+    1, 0.2, 0.2,   1, 0.2, 0.2,   1, 0.2, 0.2,  1, 0.2, 0.2,     // v0-v1-v2-v3 front
+    1, 0.2, 0.2,   1, 0.2, 0.2,   1, 0.2, 0.2,  1, 0.2, 0.2,     // v0-v3-v4-v5 right
+    1, 0.2, 0.2,   1, 0.2, 0.2,   1, 0.2, 0.2,  1, 0.2, 0.2,     // v0-v5-v6-v1 up
+    1, 0.2, 0.2,   1, 0.2, 0.2,   1, 0.2, 0.2,  1, 0.2, 0.2,     // v1-v6-v7-v2 left
+    1, 0.2, 0.2,   1, 0.2, 0.2,   1, 0.2, 0.2,  1, 0.2, 0.2,     // v7-v4-v3-v2 down
+    1, 0.2, 0.2,   1, 0.2, 0.2,   1, 0.2, 0.2,  1, 0.2, 0.2   // v4-v7-v6-v5 back
  ]);
 
   // Normal
@@ -257,16 +262,14 @@ function drawCube(gl, canvas){
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_BYTE, 0);
 }
 
-function keypress(ev, gl){
+function keypress(canvas, ev, gl){
     var u_shade_toggle = gl.getUniformLocation(gl.program, 'u_shade_toggle');
-    if (ev.which == "p".charCodeAt(0)){
+    if (ev.which == "a".charCodeAt(0)){
         gl.uniform1i(u_shade_toggle, 1);
-
     }
-    else if (ev.which == "g".charCodeAt(1)){
+    else if (ev.which == "s".charCodeAt(0)){
         gl.uniform1i(u_shade_toggle, 0);
     }
-    gl.clear(gl.COLOR_BUFFER_BIT);
     drawCube(gl, canvas);
 }
 
@@ -286,9 +289,24 @@ function moveLight(ev, gl, canvas){
     drawCube(gl, canvas);
 }
 
-// function changeAmbient(ev, gl){
+function changeAmbient(ev, gl, canvas){
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    var u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
+    if(ambientCount % 3 == 0){
+        gl.uniform3f(u_AmbientLight, 0.0, 0.0, 0.2);
+        ambientCount++;
+    }
+    else if(ambientCount % 3 == 1){
+        gl.uniform3f(u_AmbientLight, 0.0, 0.2, 0.0);
+        ambientCount++;
+    }
+    else{
+        gl.uniform3f(u_AmbientLight, 0.2, 0.0, 0.0);
+        ambientCount++;
+    }
 
-// }
+    drawCube(gl, canvas);
+}
 
 // function changeSpecular(ev, gl){
 

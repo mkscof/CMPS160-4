@@ -24,9 +24,10 @@ void main() {
   
   vec3 specLight = vec3(0, 1, 0);
   vec3 viewDirection = vec3(0, 0, -1);
-  vec3 reflectedVector;
-  int shine;
-  float rDotVp = max((dot(reflectedVector, viewDirection)^shine), 0.0);
+  vec3 reflectedVector = lightDirection - (2.0 * lightDirection) * normal;
+  float shine = 1.0;
+  float dotted = dot(reflectedVector, viewDirection);
+  float rDotVp = max(pow(dotted, shine), 0.0);
   
   vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;
   vec3 ambient = u_AmbientLight * a_Color.rgb;
