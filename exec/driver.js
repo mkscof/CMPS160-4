@@ -10,6 +10,7 @@ var normals = [];
 var indices = [];
 
 var ambientCount = 0;
+var specCount = 0;
 var lightPosX = 3.3;
 
 function main() {
@@ -39,6 +40,9 @@ function main() {
 
     var abutton = document.getElementById("changeAmbient");
     abutton.onclick = function(ev){ changeAmbient(ev, gl, canvas); };
+
+    var sbutton = document.getElementById("changeSpecular");
+    sbutton.onclick = function(ev){ changeSpecular(ev, gl, canvas); };
     
 }
 
@@ -92,9 +96,10 @@ function start(gl, canvas) {
     var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
     var u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
     var u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
+    var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
     var u_shade_toggle = gl.getUniformLocation(gl.program, 'u_shade_toggle');
     
-    if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition|| !u_AmbientLight || !u_shade_toggle) { 
+    if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition|| !u_AmbientLight || !u_SpecularLight || !u_shade_toggle) { 
         console.log('Failed to get the storage location');
         return;
     }
@@ -105,6 +110,8 @@ function start(gl, canvas) {
     gl.uniform3f(u_LightPosition, 3.3, 4.0, 3.5);
     // Set the ambient light
     gl.uniform3f(u_AmbientLight, 0.0, 0.0, 0.2);
+    // Set specular liglht
+    gl.uniform3f(u_SpecularLight, 0.0, 1.0, 0.0);
     //Set shading type, Gouraud initially
     gl.uniform1i(u_shade_toggle, 0);
 
@@ -275,7 +282,10 @@ function keypress(canvas, ev, gl){
 
 function moveCube(ev, gl, canvas){
     for(var i = 0; i < vertices.length; i++){
-        if(i % 3 == 0){
+        if(i % 3 == 0){ //x coord
+            vertices[i] -= 0.1;
+        }
+        if(i % 3 == 2){ //z coord
             vertices[i] -= 0.1;
         }
     }
@@ -284,7 +294,7 @@ function moveCube(ev, gl, canvas){
 
 function moveLight(ev, gl, canvas){
     var u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
-    lightPosX -= 0.1;
+    lightPosX += 0.1;
     gl.uniform3f(u_LightPosition, lightPosX, 4.0, 3.5);
     drawCube(gl, canvas);
 }
@@ -308,9 +318,24 @@ function changeAmbient(ev, gl, canvas){
     drawCube(gl, canvas);
 }
 
-// function changeSpecular(ev, gl){
+function changeSpecular(ev, gl, canvas){
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
+    if(specCount % 3 == 0){
+        gl.uniform3f(u_SpecularLight, 0.0, 0.0, 0.2);
+        specCount++;
+    }
+    else if(specCount % 3 == 1){
+        gl.uniform3f(u_SpecularLight, 0.0, 0.2, 0.0);
+        specCount++;
+    }
+    else{
+        gl.uniform3f(u_SpecularLight, 0.2, 0.0, 0.0);
+        specCount++;
+    }
 
-// }
+    drawCube(gl, canvas);
+}
 
 // loads SOR file and draws object
 function updateScreen(canvas, gl) {
