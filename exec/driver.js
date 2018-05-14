@@ -43,6 +43,10 @@ function main() {
 
     var sbutton = document.getElementById("changeSpecular");
     sbutton.onclick = function(ev){ changeSpecular(ev, gl, canvas); };
+
+    var slider = document.getElementById("glossiness");
+    //output.innerHTML = slider.value;
+    slider.oninput = function(ev){ setGloss(ev, gl, canvas, slider); }
     
 }
 
@@ -98,6 +102,7 @@ function start(gl, canvas) {
     var u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
     var u_SpecularLight = gl.getUniformLocation(gl.program, 'u_SpecularLight');
     var u_shade_toggle = gl.getUniformLocation(gl.program, 'u_shade_toggle');
+    var u_shine = gl.getUniformLocation(gl.program, 'u_shine');
     
     if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition|| !u_AmbientLight || !u_SpecularLight || !u_shade_toggle) { 
         console.log('Failed to get the storage location');
@@ -110,10 +115,12 @@ function start(gl, canvas) {
     gl.uniform3f(u_LightPosition, 3.3, 4.0, 3.5);
     // Set the ambient light
     gl.uniform3f(u_AmbientLight, 0.0, 0.0, 0.2);
-    // Set specular liglht
+    // Set specular light
     gl.uniform3f(u_SpecularLight, 0.0, 1.0, 0.0);
     //Set shading type, Gouraud initially
     gl.uniform1i(u_shade_toggle, 0);
+    //Set shininess
+    gl.uniform1f(u_shine, 25.0);
 
     var modelMatrix = new Matrix4();  // Model matrix
     var mvpMatrix = new Matrix4();    // Model view projection matrix
@@ -333,6 +340,16 @@ function changeSpecular(ev, gl, canvas){
         gl.uniform3f(u_SpecularLight, 0.2, 0.0, 0.0);
         specCount++;
     }
+
+    drawCube(gl, canvas);
+}
+
+function setGloss(ev, gl, canvas, slider){
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    var u_shine = gl.getUniformLocation(gl.program, 'u_shine');
+    var shine = slider.value;
+    
+    gl.uniform1f(u_shine, shine);
 
     drawCube(gl, canvas);
 }

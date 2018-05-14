@@ -15,6 +15,7 @@ varying vec4 v_Color;
 varying vec3 v_Normal;
 varying vec3 v_Position;
 
+uniform float u_shine;
 uniform int u_shade_toggle;
 
 void main() {
@@ -33,9 +34,9 @@ void main() {
   //vec3 viewDirection = vec3(0, 0, 1);
   vec3 reflectedVector = reflect(-lightDirection, v_Normal);
 
-  float shine = 25.0;
+  //float shine = 25.0;
   float dotted = dot(reflectedVector, lightDirection);
-  float rDotVp = max(pow(dotted, shine), 0.0);
+  float rDotVp = max(pow(dotted, u_shine), 0.0);
   
   vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;
   vec3 ambient = u_AmbientLight * a_Color.rgb;
