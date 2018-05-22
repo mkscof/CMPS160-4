@@ -22,11 +22,8 @@ void main() {
 	vec3 lightDirection = normalize(u_LightPosition - v_Position);
 	
 	float nDotL = max(dot(lightDirection, v_Normal), 0.0);
+	vec3 reflectedVector = reflect(lightDirection, normal);
 
-	vec3 viewDirection = vec3(0, 0, 1);
-	vec3 reflectedVector = reflect(-lightDirection, normal);
-
-	//float shine = 25.0;
 	float dotted = dot(reflectedVector, lightDirection);
 	float rDotVp = max(pow(dotted, u_shine), 0.0);
 

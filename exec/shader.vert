@@ -20,21 +20,14 @@ uniform int u_shade_toggle;
 
 void main() {
   gl_Position = u_MvpMatrix * a_Position;
-  
-  //vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal));
   v_Normal = normalize(vec3(u_NormalMatrix * a_Normal));
-  
-  //vec4 vertexPosition = u_ModelMatrix * a_Position;
   v_Position = vec3(u_ModelMatrix * a_Position);
   
   vec3 lightDirection = normalize(u_LightPosition - v_Position);
   float nDotL = max(dot(lightDirection, v_Normal), 0.0);
   
-  //vec3 specLight = u_SpecularLight
-  //vec3 viewDirection = vec3(0, 0, 1);
-  vec3 reflectedVector = reflect(-lightDirection, v_Normal);
+  vec3 reflectedVector = reflect(lightDirection, v_Normal);
 
-  //float shine = 25.0;
   float dotted = dot(reflectedVector, lightDirection);
   float rDotVp = max(pow(dotted, u_shine), 0.0);
   
